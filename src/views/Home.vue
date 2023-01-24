@@ -96,7 +96,7 @@ export default {
     select: {
       required,
       serverFailed() {
-        // console.log('oi')
+        
         return !this.hasServerError("currencies");
       },
     },
@@ -106,7 +106,7 @@ export default {
         return this.amount > 0
       },
       serverFailed() {
-        // console.log('oi')
+        
         return !this.hasServerError("currencies");
       },
     },

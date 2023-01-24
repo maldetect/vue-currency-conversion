@@ -117,7 +117,7 @@ export default {
       maxLength: maxLength(60),
       minLength: minLength(3),
       serverFailed() {
-        // console.log('oi')
+        
         return !this.hasServerError("name");
       },
     },
@@ -183,7 +183,7 @@ export default {
     passwordErrors: {
       get() {
         const errors = [];
-        // console.log('oi')
+        
         if (!this.$v.password.$dirty) return errors;
         !this.$v.password.minLength &&
           errors.push("Password must have at least 8 characters.");
@@ -199,7 +199,7 @@ export default {
     password_confirmationErrors: {
       get() {
         const errors = [];
-        // console.log('oi')
+        
         if (!this.$v.password_confirmation.$dirty) return errors;
         !this.$v.password_confirmation.minLength &&
           errors.push("Confirmation must have at least 8 characters.");

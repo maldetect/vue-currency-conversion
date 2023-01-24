@@ -133,7 +133,7 @@ export default {
     passwordErrors: {
       get() {
         const errors = []
-        // console.log('oi')
+        
         if (!this.$v.password.$dirty) return errors
       
         !this.$v.password.required && errors.push('Pasword is required.')
