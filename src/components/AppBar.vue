@@ -1,12 +1,10 @@
 <template>
     <v-app-bar app>
-    <!-- -->
+      <v-toolbar-title>Currency Conversion</v-toolbar-title>
   </v-app-bar>
 </template>
 
 <script>
-// @ is an alias to /src
-
 export default {
   name: 'AppBar',
 
