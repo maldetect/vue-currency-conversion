@@ -98,7 +98,6 @@ export default {
             this.details = []
             axios.get('/api/reports/details/'+this.reportID).then((data) =>{
                 this.details = data?.data?.data
-                console.log(this.details)
                 this.loading = false
             }).catch((err)=>{
                 this.$toast.error(err.response.data?.message)

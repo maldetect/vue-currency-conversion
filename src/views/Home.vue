@@ -198,7 +198,6 @@ export default {
           this.$toast.info(data.response.metadata?.message);
         })
         .catch((err) => {
-          console.log(err);
           this.$toast.error(err.response.data?.message);
         });
     },
@@ -219,7 +218,6 @@ export default {
           this.result = data?.data;
         })
         .catch((err) => {
-          console.log(err);
           this.$toast.error(err.response.data?.message);
           this.loadingConvertion = false;
         });
