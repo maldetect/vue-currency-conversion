@@ -37,9 +37,7 @@
 export default {
   name: 'CurrencyTable',
   props: ['items'],
-  created(){
-    console.log(this.items)
-  }
+  
 
 }
 </script>

@@ -39,6 +39,14 @@
           <v-col>
             <v-btn depressed color="primary" @click="convert"> Convert </v-btn>
           </v-col>
+          <v-col>
+            <v-btn color="primary" @click="openDialog">Request a Report</v-btn>
+            <report-type-dialog
+              @save="save"
+              :showDialog="showDialog"
+              @closeDialog="closeDialog"
+            ></report-type-dialog>
+          </v-col>
         </v-row>
         <v-row>
           <v-col>
@@ -62,13 +70,12 @@ import NavigationDrawer from "../components/NavigationDrawer";
 import axios from "axios";
 import ConversionTable from "../components/Util/ConversionTable.vue";
 import { validationMixin } from "vuelidate";
-import {
-  required,
-} from "vuelidate/lib/validators";
+import { required } from "vuelidate/lib/validators";
+import ReportTypeDialog from "../components/ReportTypeDialog.vue";
 
 export default {
   name: "Home",
-  components: { AppBar, NavigationDrawer, ConversionTable },
+  components: { AppBar, NavigationDrawer, ConversionTable, ReportTypeDialog },
   mixins: [validationMixin],
   data() {
     return {
@@ -78,7 +85,8 @@ export default {
       amount: 0,
       loadingCurrencies: false,
       loadingConvertion: false,
-      errorMessage:{}
+      errorMessage: {},
+      showDialog: false,
     };
   },
   watch: {
@@ -96,17 +104,15 @@ export default {
     select: {
       required,
       serverFailed() {
-        
         return !this.hasServerError("currencies");
       },
     },
     amount: {
       required,
-      moreThanZero(){
-        return this.amount > 0
+      moreThanZero() {
+        return this.amount > 0;
       },
       serverFailed() {
-        
         return !this.hasServerError("currencies");
       },
     },
@@ -116,9 +122,9 @@ export default {
       get() {
         const errors = [];
         if (!this.$v.select.$dirty) return errors;
-       
+
         !this.$v.select.required && errors.push("Currencies is required.");
-        
+
         !this.$v.select.serverFailed &&
           errors.push(this.errorMessage.currencies.join(" "));
         delete this.errorMessage?.currencies;
@@ -130,7 +136,7 @@ export default {
       get() {
         const errors = [];
         if (!this.$v.amount.$dirty) return errors;
-       
+
         !this.$v.amount.required && errors.push("Amount is required.");
         !this.$v.amount.moreThanZero &&
           errors.push("Amount must be more than zero");
@@ -145,6 +151,9 @@ export default {
     this.fetchCurrencies();
   },
   methods: {
+    closeDialog() {
+      this.showDialog = false;
+    },
     hasServerError(field) {
       if (Object.prototype.hasOwnProperty.call(this.errorMessage, field))
         return true;
@@ -169,25 +178,50 @@ export default {
           this.loadingCurrencies = false;
         });
     },
-    convert() {
-      this.$v.$touch()
+    openDialog() {
+      this.$v.$touch();
       if (this.$v.$invalid) {
-        this.$toast.error('Check Errors!')
-        return
+        this.$toast.error("Check Errors!");
+        return;
       }
-      this.loadingConvertion = true
+      this.showDialog = true;
+    },
+    save(type) {
+      this.showDialog = false;
+      axios
+        .post("/api/reports", {
+          type: type,
+          currencies: this.select.map(item => item.value).join(','),
+          amount: this.amount,
+        })
+        .then(({ data }) => {
+          this.$toast.info(data.response.metadata?.message);
+        })
+        .catch((err) => {
+          console.log(err);
+          this.$toast.error(err.response.data?.message);
+        });
+    },
+    convert() {
+      this.$v.$touch();
+      if (this.$v.$invalid) {
+        this.$toast.error("Check Errors!");
+        return;
+      }
+      this.loadingConvertion = true;
       axios
         .post("/api/currencies/convert", {
           currencies: this.select.map((e) => e.value),
           amount: this.amount,
         })
         .then(({ data }) => {
-          this.loadingConvertion =false
+          this.loadingConvertion = false;
           this.result = data?.data;
-        }).catch((err)=>{
-          console.log(err)
-          this.$toast.error(err.response.data?.message)
-          this.loadingConvertion = false
+        })
+        .catch((err) => {
+          console.log(err);
+          this.$toast.error(err.response.data?.message);
+          this.loadingConvertion = false;
         });
     },
   },
